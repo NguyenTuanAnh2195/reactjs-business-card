@@ -1,16 +1,23 @@
 import React from 'react';
+import { User } from '../interfaces';
 
 interface Props {
     displayForm: Function,
     handleLogout: Function
-    loggedIn: Boolean,
+    loggedIn: boolean,
+    showComponent: string,
+    toggleComponent: Function,
+    user: User | null
 }
 
 const Nav = (props: Props)  => {
   const {
     loggedIn,
     displayForm,
-    handleLogout
+    handleLogout,
+    showComponent,
+    toggleComponent,
+    user
   } = props;
   const loggedOutNav = (
     <ul>
@@ -21,7 +28,12 @@ const Nav = (props: Props)  => {
 
   const loggedInNav = (
     <ul>
-      <li onClick={() => handleLogout}>Logout</li>
+      <li onClick={() => handleLogout()}>Logout</li>
+      {user && user.is_staff && (
+        <li onClick={() => toggleComponent(showComponent === 'list' ? 'detail' : 'list')}>
+          {showComponent === 'list' ? 'Show Detail' : 'Show User List'}
+        </li>
+      )}
     </ul>
   );
   return <div>{loggedIn ? loggedInNav : loggedOutNav}</div>;

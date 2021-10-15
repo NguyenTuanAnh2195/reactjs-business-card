@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { MouseEventHandler } from 'react';
 
 interface Props {
     title: string;
-    handleClick: Function;
+    handleClick: MouseEventHandler;
 };
 
 const SortingButton = (props: Props) => {
     return (
-        <button name={props.title} onClick={() => props.handleClick}></button>
+        <button name={props.title} onClick={props.handleClick}>{props.title}</button>
     )
 };
 
