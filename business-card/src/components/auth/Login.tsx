@@ -23,7 +23,7 @@ const Login = (props: Props) => {
   }
 
   return (
-    <form onSubmit={() => {props.handleLogin(email, password)}}>
+    <form onSubmit={(e) => {props.handleLogin(e, email, password)}}>
       <h3>Log In</h3>
       <label htmlFor="email">Email</label>
       <input

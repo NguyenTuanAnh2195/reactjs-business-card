@@ -12,6 +12,7 @@ interface EventTarget {
   name: string;
   value: string;
 }
+
 const Signup = (props: Props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,7 +23,7 @@ const Signup = (props: Props) => {
   };
 
   return (
-    <form onSubmit={() => {props.handleSignup(email, password)}}>
+    <form onSubmit={(e) => {props.handleSignup(e, email, password)}}>
       <h3>Sign Up</h3>
       <label htmlFor="email">Email</label>
       <input
