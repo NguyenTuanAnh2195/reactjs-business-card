@@ -1,8 +1,8 @@
-import { BASE_URL } from "../../utils/constants";
+import { BASE_URL, ACTUAL_URL } from "../../utils/constants";
 import axios, { AxiosRequestConfig } from "axios";
 
 const DEFAULT_API_CONFIG: AxiosRequestConfig = {
-  baseURL: BASE_URL,
+  baseURL: ACTUAL_URL,
   timeout: 30000,
 };
 
