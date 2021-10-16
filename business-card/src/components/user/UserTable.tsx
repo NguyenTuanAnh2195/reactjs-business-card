@@ -79,6 +79,7 @@ const UserTable = (props: Props) => {
         {
           userList.map(user => {
             const {
+              id,
               first_name: firstName,
               last_name: lastName,
               email,
@@ -91,7 +92,7 @@ const UserTable = (props: Props) => {
             } = user;
 
             return (
-              <tr>
+              <tr key={id}>
                 <td>
                   <p>{firstName}</p><span><button onClick={() => props.toggleComponent('detail', user)}>Edit</button></span>
                 </td>

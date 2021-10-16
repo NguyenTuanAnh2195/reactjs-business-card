@@ -1,24 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 
 import APIV1 from '../../api/v1/config';
-import { User } from '../../components/interfaces';
 
-interface Props {
-  user: User,
-  editedUser: User,
-  editingAnother: boolean,
-  toggleComponent: Function,
-};
 
-interface LoginAPIResponse {
-  data: Object
-}
 
 const apiInterface = new APIV1({});
 
-const UserProfile = (props: Props) => {
-  const { user, editingAnother, toggleComponent } = props;
+const UserProfile = (props) => {
+  const { editingAnother, toggleComponent } = props;
+  const [currentUser, setCurrentUser] = useState(props.user)
+  
+  useEffect(() => {
+    apiInterface.client.request({
+      method: 'get',
+      url: `/accounts/${id}`,
+      headers: {
+        Authorization: `JWT ${localStorage.getItem('token')}`,
+      },
+    })
+      .then((response) => {
+        setCurrentUser(response.data);
+      })
+  }, [])
+
   const {
     id,
     first_name: firstName,
@@ -31,9 +36,9 @@ const UserProfile = (props: Props) => {
     birth_day: birthDay,
     phone_number: phoneNumber,
     profile_picture: profilePicture,
-    is_staff: isStaff
-  } = user;
+  } = currentUser;
 
+  
   const [formFirstName, setFormFirstName] = useState(firstName);
   const [formLastName, setFormLastName] = useState(lastName);
   const [formEmail, setFormEmail] = useState(email);
@@ -43,54 +48,62 @@ const UserProfile = (props: Props) => {
   const [formCity, setFormCity] = useState(city);
   const [formBirthDay, setFormBirthday] = useState(birthDay);
   const [formPhoneNumber, setFormPhoneNumber] = useState(phoneNumber);
-  const [formProfilePicture, setFormProfilePicture] = useState(profilePicture);
+  const [formProfilePicture, setFormProfilePicture] = useState(null);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e) => {
+    // debugger;
     e.preventDefault();
-    apiInterface.client.request<unknown, LoginAPIResponse>({
+    const formData = new FormData();
+    formData.append('first_name', formFirstName);
+    formData.append('last_name', formLastName);
+    formData.append('email', formEmail);
+    if (formAge !== null) {
+      formData.append('age', formAge);
+    }
+    formData.append('job_title', formJobTitle);
+    formData.append('employer', formEmployer);
+    formData.append('city', formCity);
+    if (formBirthDay !== null) {
+      formData.append('birth_day', moment(formBirthDay).format('YYYY-MM-DD hh:mm:ss'));
+    }
+    formData.append('phone_number', formPhoneNumber)
+    if (formProfilePicture !== null) {
+      formData.append('profile_picture', (formProfilePicture))
+    }
+    
+  
+    apiInterface.client.request({
       method: 'put',
       url: `/accounts/${id}`,
-      data: {
-        'first_name': formFirstName,
-        'last_name': formLastName,
-        'email': formEmail,
-        'age': formAge,
-        'job_title': formJobTitle,
-        'employer': formEmployer,
-        'city': formCity,
-        'birth_day': moment(formBirthDay, 'YYYY-MM-DD'),
-        'phone_number': formPhoneNumber,
-        'profile_picture': formProfilePicture
-      },
+      data: formData,
       headers: {
         Authorization: `JWT ${localStorage.getItem('token')}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data'
       },
     })
-      .then(() => {
+      .then((response) => {
         alert("Edit Success!");
         if (editingAnother) {
           toggleComponent('list'); 
         } else {
           toggleComponent('detail')
+          setCurrentUser(response.data);
         }
       })
-      .catch(error => {
-        alert(error.response.data)
+      .catch(() => {
+        alert('Some thing went wrong. Check your submitted data')
       })
   }
 
   const handleDelete = () => {
     const deleteConfirmation = window.confirm("Are you sure you want to delete this user ?");
     if (!deleteConfirmation) return;
-    apiInterface.client.request<unknown, LoginAPIResponse>({
+    apiInterface.client.request({
       method: 'delete',
       url: `/accounts/${id}`,
       headers: {
         Authorization: `JWT ${localStorage.getItem('token')}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
       },
     })
       .then(response => {
@@ -104,7 +117,7 @@ const UserProfile = (props: Props) => {
       <form onSubmit={(e) => handleSubmit(e)}>
         <p>{editingAnother && `Currently editing the account of ${email}`}</p>
         <div className="user_detail profile_picture">
-          <p>Profile Picture: <img src={`${formProfilePicture}`} alt='avatar' width="400" height="360"/></p>
+          <p>Profile Picture: <img src={`${profilePicture}`} alt='avatar' width="400" height="360"/></p>
           <label htmlFor="profilePicture">Upload Profile Picture</label>
           <input
             type="file"
@@ -181,7 +194,7 @@ const UserProfile = (props: Props) => {
           <input
             type="date"
             name="birthday"
-            value={formBirthDay}
+            value={moment(formBirthDay).format('YYYY-MM-DD')}
             onChange={(e) => setFormBirthday(e.target.value)}
           />
         </div>
