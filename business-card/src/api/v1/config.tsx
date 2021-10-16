@@ -4,7 +4,6 @@ import axios, { AxiosRequestConfig } from "axios";
 const DEFAULT_API_CONFIG: AxiosRequestConfig = {
   baseURL: BASE_URL,
   timeout: 30000,
-  headers: { 'Content-Type': 'application/json' }
 };
 
 export default class APIV1 {

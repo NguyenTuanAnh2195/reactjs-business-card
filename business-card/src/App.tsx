@@ -58,7 +58,7 @@ class App extends Component {
     editedUser: User,
     userList: Array<User>,
     showComponent: string,
-    
+
   }
 
   constructor(props: Object) {
@@ -87,7 +87,11 @@ class App extends Component {
       })
         .then(response => {
           if (response.data.email) {
-            this.setState({ user: response.data });
+            this.setState({
+              user: response.data,
+              loggedIn: true,
+              showComponent: 'detail'
+            });
           }
         });
     }
@@ -120,7 +124,7 @@ class App extends Component {
         alert("Invalid Credentials")
       });
 
-    
+
   };
 
   handleSignup = (e: Event, email: string, password: string) => {
@@ -176,7 +180,6 @@ class App extends Component {
       });
     }
 
-    
   };
 
   showUserProfile = (user: User, editingAnother: boolean = false) => {
